@@ -1,0 +1,6 @@
+<SCRIPT Language="VBScript" RUNAT="SERVER">
+Sub Session_OnStart
+	session("skin") = "default"
+	session("lang") = "en"
+End Sub
+</SCRIPT>

@@ -1,0 +1,2193 @@
+#pragma namespace ("\\\\.\\Root")
+
+instance of __NameSpace
+{
+    Name = "MicrosoftDNS" ;
+} ;
+
+#pragma namespace ( "\\\\.\\Root\\MicrosoftDNS" ) 
+
+
+instance of __Win32Provider as $P
+{
+	Name = "MS_NT_DNS_PROVIDER";
+    ClsId = "{62269fec-7b32-11d2-9ab7-0000f875c5d4}";
+    ImpersonationLevel = 3;
+    PerUserInitialization = "FALSE";
+};
+
+instance of __InstanceProviderRegistration
+{
+    Provider = $P;
+    SupportsGet = "TRUE";
+    SupportsPut = "TRUE";
+    SupportsDelete = "TRUE";
+    SupportsEnumeration = "TRUE";
+    QuerySupportLevels = {"WQL:UnarySelect"};
+};
+instance of __MethodProviderRegistration
+{
+    Provider = $P;
+};
+
+
+[Abstract, Description (
+    "The ManagedSystemElement class is the base class for the system element "
+    "hierarchy. Membership Criteria: Any distinguishable component of a "
+    "system is a candidate for inclusion in this class.<P>Examples: Software "
+    "components, such as files; and devices, such as disk drives and "
+    "controllers, and physical components such as chips and cards."):  
+    ToSubClass,
+ Locale (0x409), UUID ("{8502C517-5FBB-11D2-AAC1-006008C78BC7}")  ] 
+class CIM_ManagedSystemElement
+{
+    [MaxLen (64): ToSubClass , Description (
+     "The Caption property is a short textual description (one-line string) "
+     "of the object."): ToSubClass , Read: ToSubClass] 
+   string Caption ;
+    [Description (
+     "The Description property provides a textual description of the "
+     "object. "): ToSubClass , Read: ToSubClass] 
+   string Description ;
+    [Description (
+     "A datetime value indicating when the object was installed. A lack of a "
+     "value does not indicate that the object is not installed."): ToSubClass , 
+     MappingStrings {"MIF.DMTF|ComponentID|001.5"}: ToSubClass , Read: ToSubClass] 
+   datetime InstallDate ;
+    [Description (
+     "The Name property defines the label by which the object is known. When "
+     "subclassed, the Name property can be overridden to be a Key property."):  
+     ToSubClass , Read: ToSubClass] 
+   string Name ;
+    [Description ("A string indicating the current status of the object."): 
+     ToSubClass, ValueMap {"OK", "Error", "Degraded", "Unknown"}: ToSubClass , 
+     Read: ToSubClass] 
+   string Status ;
+};
+     
+[Abstract, Description (
+    "The CIM_LogicalElement class is the base class for all the components "
+    "of the system that represent abstract system components.<P>Example: "
+    "Profiles, processes, or system capabilities in the form of logical "
+    "devices."): ToSubClass,
+ Locale (0x409), UUID ("{8502C518-5FBB-11D2-AAC1-006008C78BC7}") ] 
+class CIM_LogicalElement:CIM_ManagedSystemElement
+{
+};
+
+[Abstract, Description (
+    "A logical element that contains the information necessary to represent "
+    "and manage the functionality provided by a Device and/or "
+    "SoftwareFeature. A Service is a general-purpose object to configure and "
+    "manage the implementation of functionality. It is not the functionality "
+    "itself."): ToSubClass,
+ Locale (0x409), UUID ("{8502C527-5FBB-11D2-AAC1-006008C78BC7}") ] 
+class CIM_Service:CIM_LogicalElement
+{
+    [CIM_Key, Read: ToSubClass] 
+   string CreationClassName ;
+    [Override ("Name"): ToSubClass , Key, Description (
+     "The Name property uniquely identifies the Service and provides an "
+     "indication of the functionality that is managed. This functionality is "
+     "described in more detail in the object's Description property. "): 
+     ToSubClass , Read: ToSubClass] 
+   string Name ;
+    [Description (
+     "StartMode is a string value indicating whether the Service is "
+     "automatically started by a System, Operating System, etc. or only "
+     "started upon request."): ToSubClass , 
+     ValueMap {"Automatic", "Manual"}: ToSubClass ,
+     Read: ToSubClass] 
+   string StartMode ;
+    [Description (
+     "ServiceStarted is a boolean indicating whether the Service has been "
+     "started (TRUE), or stopped (FALSE)."): ToSubClass , Read: ToSubClass] 
+   boolean Started ;
+    [Propagated ("CIM_System.CreationClassName"): ToSubClass, CIM_Key, 
+     Description ("The type name of the system that hosts this service"): 
+     ToSubClass , Read: ToSubClass] 
+   string SystemCreationClassName ;
+    [Propagated ("CIM_System.Name"): ToSubClass, CIM_Key, Description (
+     "The name of the system that hosts this service"): ToSubClass , Read: ToSubClass] 
+   string SystemName ;
+    [Description (
+     "The StartService method places the Service in the started state. It "
+     "returns an integer value of 0 if the Service was successfully started, "
+     "1 if the request is not supported and any other number to indicate an "
+     "error."): ToSubClass ] 
+   uint32 StartService() ;
+    [Description (
+     "The StopService method places the Service in the stopped state. It "
+     "returns an integer value of 0 if the Service was successfully stopped, "
+     "1 if the request is not supported and any other number to indicate an "
+     "error."): ToSubClass ] 
+   uint32 StopService() ;
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,	
+	 Description("This class describes a DNS server. Every instance "
+          "of this class may be associated with (or more intuitively 'may "
+          "contain') one instance of class MicrosoftDNS_Cache, one instance "
+          "of class MicrosoftDNS_RootHints and multiple instances of class "
+          "MicrosoftDNS_Zone."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+       Locale (0x409), UUID ("{3E9F9B09-AA43-11d2-85DD-0000F8102E5F}") 
+	]
+class MicrosoftDNS_Server : CIM_Service
+{
+		[Override ("Name"): ToSubClass,
+		 Read: ToSubClass,
+		 Description("Indicates the Fully Qualified Domain Name or IP "
+                  "address of the DNS server."): ToSubClass
+		]
+	string Name;
+		[Read: ToSubClass,
+		 Description("Indicates the version of the DNS server."):  
+                  ToSubClass
+		]
+	uint32 Version;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates which policies are activated "
+                  "in the Event Viewer system log. This property should be set to "
+                  "specific values based on the following algorithm: "
+                  "Every policy (to be activated in the Event Viewer system "
+                  "log) is assigned a specific value: Query - 1, Notify - 16, "
+                  "Update - 32, Non-query transactions - 254, Questions - 256, "
+                  "Answers - 512, Send - 4096, Receive - 8192, UDP - 16384, "
+                  "TCP - 32768, All packets - 65535, "
+                  "NT Directory Service write transaction - 65536, "
+                  "NT Directory Service update transaction - 131072, "
+                  "Full Packets - 16777216, and Write Through - 2147483648. The "
+                  "sum of the values corresponding to all the policies to be "
+                  "activated is indicated in this property."): ToSubClass,
+		Valuemap{"1", "16", "32", "254", "256", "512", "4096", "8192", "16384", 
+			"32768", "65535", "65536", "131072", "16777216", "2147483648"}:ToSubClass,
+			Values{"Query", "Notify", "Update", "Non-query transactions", "Questions",
+				 "Answers", "Send", "Receive", "UDP", "TCP", "All packets", 
+				 "NT Directory Service write transaction", 
+				 "NT Directory Service update transaction", 
+				 "Full Packets", "Write Through"}:ToSubClass
+		]
+	uint32 LogLevel;		
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates which events the DNS server records "
+                  "in the Event Viewer system log."): ToSubClass ,
+                 Valuemap {"0", "1", "2", "4"}: ToSubClass , 
+                 Values {"None", "Log only errors", "Log only warnings and errors",
+                  "Log all events"}: ToSubClass 
+		]
+	uint16 EventLogLevel;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the protocols over which "
+                  "administrative RPC runs. This property should be set to specific "
+                  "value based on the following algorithm: Every protocol to be used "
+                  "in RPC is assigned a specific value: None: 0, TCP/IP: 1, Named "
+                  "Pipes: 2, LPC: 4. The sum of the values corresponding to all "
+                  "the protocols to be used in RPC is indicated in this property.")
+                 : ToSubClass
+		]
+	sint32 RpcProtocol;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the set of eligible characters "
+                  "to be used in DNS names."): ToSubClass ,
+                 Valuemap {"0", "1", "3"}: ToSubClass ,
+                 Values {"Strict RFC (ANSI)", "Non RFC (ANSI)", 
+                  "Multibyte (UTF8)"}: ToSubClass	
+       		]
+	uint16 NameCheckFlag;
+		[Not_NULL, Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the maximum number of host records "
+                  "returned in response to an address request. Values between "
+                  "5 and 28 are valid."): ToSubClass
+		]
+	uint32 AddressAnswerLimit;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the interval (in seconds) before "
+                  "retrying a recursive lookup. If the RecursionRetry property "
+                  "is undefined or zero, retries are made after three "
+                  "seconds. Users are discouraged from altering this property. "
+                  "However, there are some scenarios where the property "
+                  "should be changed.  One example is  when the "
+                  "DNS server contacts remote servers over a slow link, and "
+                  "the DNS server is retrying BEFORE reception "
+                  "of a response from the remote DNS. In this case, raising "
+                  "the RecursionRetry timeout to be slightly longer than the "
+                  "observed response time from the remote DNS would be "
+                  "reasonable."): ToSubClass ,
+		 Units("Seconds"): ToSubClass
+		]
+	uint32 RecursionRetry;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the timeout (in seconds) before the "
+                  "DNS server gives up recursive query. If the Recursion"
+                  "Timeout property is undefined or zero, the DNS "
+                  "server gives up after fifteen seconds. In general, the "
+                  "fifteen-second timeout is sufficient to allow any "
+                  "outstanding response to get back to the DNS server.  Users "
+                  "are discouraged from altering this property. One scenario "
+                  "where the property should be changed is when the DNS server "
+                  "contacts remote servers over a slow link, and the DNS server "
+                  "is observed rejecting queries (with SERVER_FAILURE) before "
+                  "responses are received.  (Note, that client resolvers also "
+                  "retry queries, so careful investigation is required to determine "
+                  "that remote responses are really for the query that was timed "
+                  "out.) In this case, raising the RecursionTimeout to be "
+                  "slightly longer than the observed response time from the "
+                  "remote DNS would be reasonable."): ToSubClass ,
+	         Units("Seconds"): ToSubClass
+		]
+	uint32 RecursionTimeout;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the interval (in seconds) to poll "
+                  "the DS-integrated zones."): ToSubClass ,
+		 Units("Seconds"): ToSubClass
+		]
+	uint32 DsPollingInterval;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates a maximum time (in seconds) a record of "
+                  "a recursive name query may remain in the DNS server cache. "
+                  "The DNS server deletes records from the cache when the value "
+                  "of this entry expires, even if the value of the TTL field in "
+                  "the record is greater. The default value of this property is "
+                  "86,400 seconds (1 day)."): ToSubClass ,
+		 Units("Seconds"): ToSubClass
+		]
+	uint32 MaxCacheTTL;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates how long (in seconds) a DNS server, "
+                  "forwarding a query, will wait for resolution from the "
+                  "forwarder, before attempting to resolve the query "
+                  "itself. This value is meaningless if the forwarding server "
+                  "is a Slave. To determine this, check the Slave boolean "
+                  "property."): ToSubClass ,
+		 Units("Seconds"): ToSubClass
+		]
+	uint32 ForwardTimeout;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the port on which the DNS server "
+                  "sends UDP queries to other servers. By default, the DNS "
+                  "server sends queries on a socket bound to the "
+                  "DNS port. Sometimes this situation is NOT desirable.  The  "
+                  "most obvious case occurs when an admin firewalls off "
+                  "the DNS port, to prevent outside access to the DNS server, "
+                  "but still wants the server to be able to contact "
+                  "Internet DNS servers to provide name resolution "
+                  "for internal clients.  This is also desirable if the DNS "
+                  "server is supporting disjoint nets (if true, the "
+                  "boolean property, DisjointNets, would be set to TRUE). "
+                  "In these cases, setting the SendOnNonDnsPort property to "
+                  "a non-zero value causes the DNS server to bind to an "
+                  "arbitrary port for sending to remote DNS servers. If the "
+                  "SendOnNonDnsPort value is set >1024, then the DNS server "
+                  "will bind explicitly to the port value given. This is "
+                  "useful when an admin wants to fix the port for "
+                  "firewalling purposes."): ToSubClass
+		]
+	uint32 SendOnNonDnsPort;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("Indicates the DNS server's initialization method."): 
+               ToSubClass ,
+             Values {"Uninitialized", "Boot from file", "Boot from registry",
+               "Boot from directory and registry"}: ToSubClass
+		]
+	uint16 BootMethod;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This UInt32 indicates whether the DNS server "
+        "accepts dynamic update requests."): ToSubClass,
+		Values {"Do not allow dynamic updates", "Allow unsecure dynamic updates",
+		 "Allow only secure dynamic updates"}: ToSubClass
+		]
+	uint32 AllowUpdate;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether there is an "
+                  "available DS on the DNS server."): ToSubClass
+		]
+	boolean DsAvailable;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server "
+                  "automatically creates standard reverse lookup zones."):
+                  ToSubClass
+		]
+	boolean AutoReverseZones;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server "
+                  "attempts to update its cache entries using data from root "
+                  "servers. When a DNS server boots, it needs a list of root "
+                  "server 'hints' - NS and A records for the servers - "
+                  "historically called the cache file. The Microsoft DNS "
+                  "server has a feature to allow it to attempt to "
+                  "write back a new cache file based on the responses from "
+                  "the root servers."): ToSubClass
+		]
+	boolean AutoCacheUpdate;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server does "
+                  "NOT do recursive lookups. If set to TRUE, recursive "
+                  "lookups are not done."): ToSubClass
+		]
+	boolean NoRecursion;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server "
+                  "round robins multiple A records."): ToSubClass
+		]
+	boolean RoundRobin;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server "
+                  "gives priority to the local net address returning A "
+                  "records."): ToSubClass
+		]
+	boolean LocalNetPriority;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server "
+                  "parses zone files strictly. If the StrictFileParsing "
+                  "property is undefined or zero, the server will log and "
+                  "ignore bad data in the zone file and continue to load. If the "
+                  "StrictFileParsing property is non-zero, the server will log "
+                  "and fail on zone file errors."): ToSubClass
+		]
+	boolean StrictFileParsing;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server does "
+                  "wildcarding loosely. If the LooseWildcarding property is "
+                  "undefined or zero, the server will follow the wildcarding behavior "
+                  "specified in the DNS RFC. In this case, an admin is advised to "
+                  "include MX records for all hosts that are not capable of receiving "
+                  "mail. If the LooseWildcarding property is non-zero, the server "
+                  "seeks out the closest wildcard node. In this case, an admin should "
+                  "put MX records at both the zone root and in a wildcard node ('*') "
+                  "directly below the zone root. Also, the admin should put self-"
+		  "referent MX records on hosts, which are to receive their own "
+                  "mail."): ToSubClass
+		]
+	boolean LooseWildcarding;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean determines the AXFR message format when "
+		"sending to non-Microsoft DNS secondaries. If the SlowZoneTransfer"
+		"property is undefined or non-zero, the server will always send "
+		"transfers to non-Microsoft DNS secondaries in the uncompressed "
+		"format. If the SlowZoneTransfer property is zero, "
+		"the server will send all transfers in the fast format."): ToSubClass
+		]
+	boolean SlowZoneTransfer;
+
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server writes "
+                  "NS and SOA records to the authority section on successful "
+                  "response."): 
+	          ToSubClass
+		]
+	boolean WriteAuthorityNS;
+//		[Read: ToSubClass, Write: ToSubClass,
+//		 Description("This Boolean indicates whether the DNS server writes "
+//                  "SOA records to the authority section on successful response."): 
+//                  ToSubClass
+//		]
+//	boolean WriteAuthoritySoa;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether queries to delegated "
+                  "sub-zones are forwarded."): ToSubClass
+		]
+	boolean ForwardDelegation;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server is "
+                  "a Slave."): ToSubClass
+		]
+	boolean Slave;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether the DNS server only"
+                  "saves records of names that are in the same subtree as the "
+                  "server that provided them."): ToSubClass
+		]
+	boolean SecureResponses;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This Boolean indicates whether override is allowed "
+                  "of the default binding for a socket used to send queries "
+                  "to remote DNS servers."): ToSubClass
+		]
+	boolean DisjointNets;
+		[Read: ToSubClass,
+		 Description("This array of strings enumerates the list of the DNS "
+                  "server's IP addresses."): ToSubClass
+		]
+	string ServerIPAddressesArray[];
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This array of strings enumerates the list of IP addresses "
+                  "on which the DNS server is allowed to receive queries."): 
+                  ToSubClass
+		]
+	string ListenIPAddressesArray[];
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This array of strings enumerates the list of IP addresses "
+                  "of Forwarders to which the DNS server forwards queries."): 
+                  ToSubClass
+		]
+	string ForwardersIPAddressesArray[];
+		[Implemented, Description(
+		"This method restarts the DNS server."): ToSubClass 
+		]
+	void RestartDNSServer();
+		[Implemented, Description(
+		"This method starts the DNS server."): ToSubClass 
+		]
+	uint32 StartService();
+		[Implemented, Description(
+		"This method stops the DNS server."): ToSubClass 
+		]
+	uint32 StopService();
+	
+		[Implemented, Description(
+		"This method get DS distinguished Name for the zone.") : ToSubClass
+		]
+	string GetDistinguishedName();
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,
+       Description("This class represents a Domain in a DNS "
+          "hierarchy tree."): ToSubClass,
+       Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+       Locale (0x409), UUID ("{4E0BD136-AA43-11d2-85DD-0000F8102E5F}") 
+	]
+class MicrosoftDNS_Domain : CIM_LogicalElement
+{
+		[Key, Propagated ("MicrosoftDNS_Server.Name"): ToSubClass,
+		 Read: ToSubClass,
+		 Description("Indicates the Fully Qualified Domain Name "
+                  "or IP address of the DNS server that contains this domain."): 
+                  ToSubClass
+		]
+	string DnsServerName;
+		[Key, Read: ToSubClass,
+		 Description("Indicates the Name of the Container (which "
+                  "could be a Zone, Cache or RootHints) containing this "
+                  "domain. In cases where the Container is a Zone (an "
+                  "instance of the MicrosoftDNS_Zone subclass), this property"
+                  "contains the fully qualified domain name of the Zone. "
+                  "When the Container is the root zone, the string, \".\","
+                  "should be used.  In cases where the Container is "
+                  "the DNS' cache of resource records (an instance of the "
+                  "MicrosoftDNS_Cache subclass), this property is set to the "
+                  "string, \"..Cache\".  If the Container is Root Hints (an "
+                  "instance of the MicrosoftDNS_RootHints subclass), then this "
+                  "property should be set to \"..RootHints\"."): ToSubClass 
+		]
+	string ContainerName;
+		[Override ("Name"): ToSubClass , Key,
+		 Read: ToSubClass, 
+		 Description("This string represents the Fully Qualified Domain Name "
+                  "of the domain.  For instances of DNS Cache or Root Hints, "
+                  "the strings, \"..Cache\" and \"..Root Hints\" respectively, "
+                  "should be used."): ToSubClass
+		]
+	string Name;
+		[Implemented, Description(
+		"This method get DS distinguished Name for the zone.") : ToSubClass
+		]
+	string GetDistinguishedName();
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass , 
+       Description("This class describes a DNS Zone. Every instance of "
+          "the class MicrosoftDNS_Zone must be assigned to one and only one DNS "
+          "server. Zones may be associated with (or more intuitively 'may "
+          "contain') any number of instances of the classes MicrosoftDNS_Domain "
+          "or/and MicrosoftDNS_ResourceRecord."): ToSubClass, 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+       Locale (0x409), UUID ("{4E0BD137-AA43-11d2-85DD-0000F8102E5F}") 	
+	]
+class MicrosoftDNS_Zone : MicrosoftDNS_Domain
+{
+	[Read: ToSubClass, 
+	Description("Indicates the type of the Zone."): 
+		  ToSubClass,
+		 Values {"DS integrated", "Primary", "Secondary"}: ToSubClass
+	]
+	uint16 ZoneType;
+
+	[Read: ToSubClass, Write: ToSubClass,
+		Description("This Boolean indicates whether the Zone should "
+		  "accept dynamic update requests."): ToSubClass
+	]
+	boolean AllowUpdate;
+
+	[Read: ToSubClass, Write: ToSubClass,
+	 Description("Indicates the name of the zone file."): ToSubClass
+	]
+	string DataFile;
+	[Read: ToSubClass, 
+		 Description("This Boolean indicates whether the WINS record "
+			  "is NOT replicated. If set to TRUE, WINS record "
+			  "replication is disabled."): ToSubClass
+	]
+	boolean DisableWINSRecordReplication;
+
+	[Read: ToSubClass, 
+	 Description("This UInt32 indicates whether the master Zone "
+			  "notifies secondaries of any changes in its Resource Records "
+			  "database. If set to 1, secondaries are notified."): 
+			  ToSubClass
+	]
+	uint32 Notify;
+	
+	[Read: ToSubClass, 
+	 Description("This UInt32 indicates whether zone transfer is "
+			  "allowed - but only to designated secondaries."
+			  "Designated secondaries are DNS servers whose IP addresses "
+			  "are listed in the array, SecondariesIPAddressesArray."): 
+			  ToSubClass
+	]
+	uint32 SecureSecondaries;
+	
+	[Read: ToSubClass,
+	 Description("This Boolean indicates whether the Zone is "
+			  "paused."): ToSubClass
+	]
+	boolean Paused;
+
+	[Read: ToSubClass,
+	 Description("This Boolean indicates whether the copy of the "
+			  "Zone is expired. If TRUE, the Zone is expired, or "
+			  "'shutdown'."): ToSubClass
+	]
+	boolean Shutdown;
+
+	[Read: ToSubClass,
+	 Description("This Boolean indicates whether the Zone is reverse "
+			  "(TRUE) or forward (FALSE)."): ToSubClass
+	]
+	boolean Reverse;
+
+	[Read: ToSubClass,
+	 Description("This Boolean indicates whether the Zone is "
+			  "autocreated."): ToSubClass
+	]
+	boolean Autocreated;
+
+	[Read: ToSubClass,
+	 Description("This Boolean indicates whether the Zone uses "
+			  "WINS lookup."): ToSubClass
+	]
+	boolean UseWins;
+
+	[Read: ToSubClass, 
+	 Description("This array of strings enumerates the list of "
+			  "IP addresses of Master DNS servers, to be addressed for "
+			  "zone replication. It is applicable to secondary "
+			  "zones only (ZoneType = 2, \"Secondary\")."): ToSubClass
+	]
+	string MastersIPAddressesArray[];
+
+	[Read: ToSubClass, 
+	 Description("This array of strings enumerates the list of IP "
+	 "addresses of the DNS servers that are allowed to"
+	 "receive this zone through zone replication."): ToSubClass
+	]
+	string SecondariesIPAddressesArray[];
+
+	[Read: ToSubClass, 
+	 Description("This array of strings enumerates the list of IP "
+	"addresses of the DNS servers that should be notified of changes in this zone."): 
+	ToSubClass
+	]
+	string NotifyIPAddressesArray[];
+
+
+	[Implemented, Description(
+	 "This method pauses the Zone."): ToSubClass 
+	]
+	void PauseZone();
+	
+	[Implemented, Description(
+	 "This method resumes the Zone. "): ToSubClass 
+	]
+	void ResumeZone();
+	
+	[Implemented, Description(
+	 "This method reloads the Zone."): ToSubClass 
+	]
+	void ReloadZoneFromItsDatabase();
+	
+	[Implemented, Description(
+	 "This method forces an update of the secondary from the Master "
+			 "DNS server."): ToSubClass 
+	]
+	void ForceRefreshOfSecondaryZoneFromMaster();
+	
+	[Implemented, Description(
+	 "This method forces an update of the Zone from the DS. For this "
+			 "method to be valid, the ZoneType must be 0 - the "
+			 "Zone must indeed be stored in the DS."): ToSubClass 
+	]
+	void UpdateDSIntegratedZoneByDataFromDS();
+	
+	[Implemented, Description(
+	 "This method saves the Zone's data to its zone file."): ToSubClass 
+	]
+	void WriteBackZoneToFile();
+
+	[Static, Implemented, Description(
+	"This method creates a new zone.") : ToSubClass
+	]
+	void CreateZone(
+		[IN] string ZoneName,
+		[IN, Values {"DS integrated", "Primary", "Secondary"}] uint16 ZoneType,
+		[IN, optional] string DataFileName,
+		[IN, optional] string IpAddr[],
+		[IN, optional] string AdminEmailName,
+		[OUT] MicrosoftDns_Zone ref RR);
+
+	[Implemented, Description(
+	"This changes zone types.") : ToSubClass
+	]
+	void ChangeZoneType(
+		[IN, Values {"DS integrated", "Primary", "Secondary"}] uint16 ZoneType,
+		[IN, optional] string DataFileName,
+		[IN, optional] string IpAddr[],
+		[IN, optional] string AdminEmailName,
+		[OUT]  MicrosoftDns_Zone ref RR);
+	
+	[Implemented, Description(
+	"This method resets the master ip address array.") : ToSubClass
+	]
+	void ResetMasterIpArray(
+		[IN] string MastersIPAddressesArray[],
+		[OUT] MicrosoftDns_Zone ref RR);
+
+	[Implemented, Description(
+	"This method resets the secondary ip address array.") : ToSubClass
+	]
+	void ResetSecondaryIpArray(
+		[IN] string SecondariesIPAddressesArray[],
+		[IN, Values { "ZONE_SECSECURE_NO_SECURITY", "ZONE_SECSECURE_NS_ONLY",
+			"ZONE_SECSECURE_LIST_ONLY", "ZONE_SECSECURE_NO_XFR"} ] uint32 SecureSecondaries,
+		[IN] string NotifyIPAddressesArray[],
+		[IN, Values { "ZONE_NOTIFY_OFF", "ZONE_NOTIFY_ALL_SECONDARIES",
+			"ZONE_NOTIFY_LIST_ONLY"} ] uint32 Notify,
+		[IN, optional] string AdminEmailName,
+		[OUT] MicrosoftDns_Zone ref RR);
+
+	[Implemented, Description(
+	"This method get DS distinguished Name for the zone.") : ToSubClass
+	]
+	string GetDistinguishedName();
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,
+       Description("This class describes a cache existing on a DNS "
+          "server. It shouldn't be confused with a Cache file which "
+          "contains root hints. This class simplifies visualizing the "
+          "containment of DNS objects, rather than representing a "
+          "real object. The class, MicrosoftDNS_Cache, is a container for the "
+          "resource records cached by the DNS server. Every instance of "
+          "the class MicrosoftDNS_Cache must be assigned to one and only one "
+          "DNS server. It may be associated with (or more intuitively 'may "
+          "contain') any number of instances of the classes, MicrosoftDNS_"
+          "Domain and/or MicrosoftDNS_ResourceRecord."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{591E9D38-AA43-11d2-85DD-0000F8102E5F}")
+	]
+class MicrosoftDNS_Cache : MicrosoftDNS_Domain
+{
+     	[Implemented, 
+		Description(
+		"This method clears the DNS server's cache of resource records. "
+        ): ToSubClass
+		]
+	void ClearDNSServerCache();
+		[Implemented, Description(
+		"This method get DS distinguished Name for the zone.") : ToSubClass
+		]
+	string GetDistinguishedName();
+
+};
+
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,
+         Description("This class describes the Root Hints stored in a "
+          "Cache file on a DNS server. This class simplifies visualizing the "
+          "containment of DNS objects, rather than representing a real "
+          "object. Class MicrosoftDNS_RootHints is a container for the resource "
+          "records stored by the DNS server in a Cache file. Every instance "
+          "of the class MicrosoftDNS_RootHints must be assigned to one and only "
+          "one DNS server. It may be associated with (or more intuitively 'may "
+          "contain') any number of instances of class MicrosoftDNS_Resource"
+          "Record."): ToSubClass,
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+      	 Locale (0x409), UUID ("{5F3F688C-AA43-11d2-85DD-0000F8102E5F}") 
+	]
+class MicrosoftDNS_RootHints : MicrosoftDNS_Domain
+{
+		[Implemented, Description(
+		 "This method writes the Root Hints back to the DNS' Cache file. "
+          ): ToSubClass 
+		]
+	void WriteBackRootHintDatafile();
+		[Implemented, Description(
+		"This method get DS distinguished Name for the zone.") : ToSubClass
+		]
+	string GetDistinguishedName();
+
+};
+
+	[
+       Schema ("MicrosoftDNS"): ToSubClass , 		
+       Description("This class represents the general properties of a "
+          "DNS Resource Record."): ToSubClass, 
+	 abstract, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{5F3F688D-AA43-11d2-85DD-0000F8102E5F}") 
+	]
+class MicrosoftDNS_ResourceRecord : CIM_LogicalElement
+{
+		[Key, Propagated ("MicrosoftDNS_Domain.DnsServerName"): ToSubClass,
+		 Read: ToSubClass,
+		 Description("Indicates the Fully Qualified Domain Name or "
+                  "IP address of the DNS server that contains this Resource "
+                  "Record."): ToSubClass
+		]
+	string DnsServerName;
+		[Key, Propagated("MicrosoftDNS_Domain.ContainerName"): ToSubClass,
+		 Read: ToSubClass, 
+		 Description("Indicates the name of the Container for "
+                  "the Zone, Cache or Root Hints instance which contains this "
+                  "Resource Record"): ToSubClass
+		]
+	string ContainerName;
+		[Key, Propagated ("MicrosoftDNS_Domain.Name"): ToSubClass,	
+             Read: ToSubClass, 
+		 Description("This string represents the Fully Qualified Domain Name of "
+                  "the Domain which contains this Resource Record. This property "
+                  "may contain the strings, \"..Cache\" or \"..RootHints\", if the "
+                  "DNS' internal cache or Root Hints (respectively) contain this "
+                  "Resource Record."): ToSubClass
+		]
+	string DomainName;
+		[Key, Read: ToSubClass,
+		 Description ("The owner name for the Resource Record."): ToSubClass
+		]
+	string OwnerName;
+		[Key, Read: ToSubClass, 
+		 Description("This string represents the class of the Resource "
+                  "Record."): ToSubClass,
+             Valuemap {"1", "2", "3", "4"}: ToSubClass,
+             Values {"IN (Internet)", "CS (CSNET)", "CH (CHAOS)",
+                  "HS (Hesiod)"}: ToSubClass
+		]
+	uint16 RecordClass=1;
+		[Read: ToSubClass, Write: ToSubClass,
+		 Description("This property indicates how long (in seconds) the "
+                  "Resource Record can be cached by a DNS resolver."): ToSubClass,
+                 Units ("Seconds"): ToSubClass
+		]
+	uint32 TTL;
+		[Key, Read: ToSubClass, 
+		 Description("This string represents the Resource Record data."): 
+                  ToSubClass
+		]
+	string RecordData;
+		[Read: ToSubClass, 
+		 Description("This string represents the entire Resource Record."): 
+                  ToSubClass
+		]
+	string TextRepresentation;
+		[Static, Implemented, Description(
+		 "This method parses the resource record in the TextRepresentation "
+                 "string, and along with the input DNS server and Container names, "
+                 "defines and instantiates a ResourceRecord object. The method "
+                 "returns a reference to the new object as an output parameter."
+				 ): ToSubClass
+		]
+	void CreateInstanceFromTextRepresentation(
+		[IN] string DnsServerName,
+        [IN] string ContainerName, 
+		[IN] string TextRepresentation,
+        [OUT] MicrosoftDNS_ResourceRecord ref RR);  
+		
+		[Static, Implemented, Description(
+			"This method to retrieve an existing instance of the MicrosoftDns_ResourceRecord "
+			"subclass, represented by the TextRepresentation string along with Dns Server "
+			"and container name." ): ToSubClass
+		]
+	void GetObjectByTextRepresentation(
+		[IN] string DnsServerName,
+		[IN] string ContainerName,
+		[IN] string TextRepresentation,
+		[OUT] MicrosoftDns_ResourceRecord RR);
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,
+       Description ("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type A record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{1A2BC2E6-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_AType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The IP address of the Host (A) record."): ToSubClass
+		]
+	string IPAddress;
+		[Implemented, static, Description(
+		 "This method instantiates an 'A' Type of Resource Record based on "
+                 "the data in the method's input parameters: the record's DNS Server "
+                 "Name, Container Name, Owner Name, class (default = IN), 'time to "
+                 "live' value and the Host's IP address. It returns a reference to "
+                 "the new object as an output parameter."): 
+                 ToSubClass
+		]
+	void CreateInstanceFromPropertyData(
+		[IN] string DnsServerName,
+        [IN] string ContainerName, 
+		[IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, 
+		[IN] string IPAddress, 
+        [OUT] MicrosoftDNS_AType ref RR);  
+
+		[Implemented, Description(
+		 "This method updates the TTL and IP address to the values specified "
+         "as the input parameters of this method. If a new value for some "
+         "parameter is not specified, then the current value for this parameter "
+         "is not changed. The method returns a reference to the modified "
+         "object as an output parameter."): ToSubClass
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string IPAddress, 
+		[OUT] MicrosoftDNS_DNS_AType ref RR);  
+
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,
+       Description ("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type SOA record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{47B8D066-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_SOAType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass ,
+		 Description("The serial number of the SOA record."): ToSubClass
+		]
+	uint32 SerialNumber;
+		[Read: ToSubClass ,
+		 Description("The primary DNS server having authority for the zone "
+                  "to which this record belongs."): ToSubClass
+		]
+	string PrimaryServer;
+		[Read: ToSubClass ,
+		 Description("The 'responsible party' for the zone to which this "
+                  "record belongs."): ToSubClass
+		]
+	string ResponsibleParty;
+		[Read: ToSubClass ,
+		 Description("The time interval (in seconds) before the zone, "
+                  "containing this record, should be refreshed."): ToSubClass ,
+		 Units ("Seconds"): ToSubClass
+		]
+	uint32 RefreshInterval;
+		[Read: ToSubClass ,
+		 Description("The time interval (in seconds) that should elapse before "
+                  "retrying a failed refresh of the zone to which this record belongs."):
+                  ToSubClass ,
+	         Units ("Seconds"): ToSubClass
+		]
+	uint32 RetryDelay;
+		[Read: ToSubClass ,
+		 Description("The upper limit on the time interval (in seconds) that "
+                  "can elapse before the zone, to which this record belongs, is no "
+	          "longer authoritative."): ToSubClass ,
+                 Units ("Seconds"): ToSubClass
+		]
+	uint32 ExpireLimit;
+		[Read: ToSubClass ,
+		 Description("The lower limit on the time interval (in seconds) that a "
+                  "DNS server or Caching resolver are allowed to cache any resource "
+                  "record from the zone, to which this record belongs."): ToSubClass ,
+                 Units ("Seconds"): ToSubClass
+		]
+	uint32 MinimumTTL;
+		[Implemented, Description(
+		 "This method updates the TTL, SOA Serial Number, Primary Server, "
+          "Responsible Party, Refresh Interval, Retry Delay, Expire Limit and "
+          "Minimum TTL (for the zone) to the values specified as the input "
+          "parameters of this method. If a new value for some parameter is not "
+          "specified, then the current value for this parameter is not changed. "
+          "The method returns a reference to the modified object as an output "
+          "parameter."): ToSubClass
+
+		]
+	void Modify(
+        [IN, optional] uint32 TTL, 
+		[IN, optional] uint32 SerialNumber, 
+		[IN, optional] string PrimaryServer,
+		[IN, optional] string ResponsibleParty, 
+		[IN, optional] uint32 RefreshInterval, 
+        [IN, optional] uint32 RetryDelay, 
+		[IN, optional] uint32 ExpireLimit, 
+		[IN, optional] uint32 MinimumTTL, 
+		[OUT] MicrosoftDNS_SOAType ref RR);  
+
+		[Static, Description(
+		 "This method parses the resource record in the TextRepresentation "
+                 "string, and along with the input DNS server and Container names, "
+                 "defines and instantiates a ResourceRecord object. The method "
+                 "returns a reference to the new object as an output parameter."
+				 ): ToSubClass
+		]
+	void CreateInstanceFromTextRepresentation(
+		[IN] string DnsServerName,
+        [IN] string ContainerName, 
+		[IN] string TextRepresentation,
+        [OUT] MicrosoftDNS_ResourceRecord ref RR);  
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type PTR record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{567E21F9-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_PTRType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The Fully Qualified Domain Name of the PTR record Data."):
+                  ToSubClass
+		]
+	string PTRDomainName;
+		[Implemented,static, Description(
+		 "This method instantiates a 'PTR' Type of Resource Record based on "
+                 "the data in the method's input parameters: the record's DNS Server "
+                 "Name, Container Name, Owner Name, class (default = IN), 'time to "
+                 "live' value and the FQDN of the PTR record. It returns a "
+                 "reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData(
+		[IN] string DnsServerName,
+        [IN] string ContainerName, 
+		[IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, 
+		[IN] string PTRDomainName, 
+        [OUT] MicrosoftDNS_PTRType ref RR);  
+		
+		[Implemented, Description(
+		"This method updates the TTL and PTR Domain Name to the values "
+		"specified as the input parameters of this method. If a new value "
+		"for some parameter is not specified, then the current value for this "
+		"parameter IS not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string PTRDomainName, 
+		[OUT] MicrosoftDNS_PTRType ref RR);  
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type NS record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{3F655A18-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_NSType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A host which should be authoritative for the domain, "
+                 "specified in record's owner."): ToSubClass
+           	]
+	string NSHost;
+		[Implemented, static, Description(
+		 "This method instantiates an 'NS' Type of Resource Record based on "
+                 "the data in the method's input parameters: the record's DNS Server "
+                 "Name, Container Name, Owner Name, class (default = IN), 'time to "
+                 "live' value and the host with authority for the domain. It returns "
+                 "a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string NSHost, 
+        [OUT] MicrosoftDNS_NSType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL and NS Host to the values specified as the "
+		"input parameters of this method. If a new value for some parameter is "
+		"not specified, then the current value for this parameter IS not changed. "
+		"The method returns a reference to the modified object as an output "
+		"parameter. "): ToSubClass
+
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string NSHost, 
+		[OUT] MicrosoftDNS_NSType ref RR);  
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type CNAME record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{47B8D065-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_CNAMEType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The canonical or primary name for the owner "
+                  "of the CNAME record."): ToSubClass
+		]
+	string PrimaryName;
+		[Implemented, static, Description(
+		 "This method instantiates a 'CNAME' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value and the primary name of the CNAME record. It "
+                 "returns a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string PrimaryName, 
+        [OUT] MicrosoftDNS_CNAMEType ref RR);
+		  
+		[Implemented, Description(
+		 "This method updates the TTL and Primary Name to the values specified "
+         "as the input parameters of this method. If a new value for some "
+         "parameter is not specified, then the current value for this parameter "
+         "is not changed. The method returns a reference to the modified object "
+         "as an output parameter."): ToSubClass
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string PrimaryName, 
+		[OUT] MicrosoftDNS_CNAMEType ref RR);  
+
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MB record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{47B8D067-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MBType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a host "
+                 "of the mailbox specified in the record's Owner Name."): ToSubClass
+		]
+	string MBHost;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MB' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name of the mailbox, class "
+                 "(default = IN), 'time to live' value and the mailbox host. It "
+                 "returns a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string MBHost, 
+        [OUT] MicrosoftDNS_MBType ref RR);
+
+		[Implemented, Description(
+		"This method updates the TTL and MB Host to the values specified as "
+		"the input parameters of this method. If a new value for some parameter "
+		"is not specified, then the current value for this parameter is not "
+		"changed. The method returns a reference to the modified object as an "
+		"output parameter."): ToSubClass
+
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN] string MBHost, 
+		[OUT] MicrosoftDNS_MBType ref RR);  
+  
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MD record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{3F655A19-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MDType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a host "
+                 "which has a mail agent which should be able to deliver mail for "
+                 "the specified domain."): ToSubClass
+		]
+	string MDHost;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MD' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name of the domain, class "
+                 "(default = IN), 'time to live' value and the host of the mail "
+                 "agent. It returns a reference to the new object as an output "
+                 "parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string MDHost, 
+        [OUT] MicrosoftDNS_MDType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL and MD Host to the values specified "
+		"as the input parameters of this method. If a new value for some "
+		"parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string MDHost, 
+		[OUT] MicrosoftDNS_MDType ref RR);
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MF record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{47B8D064-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MFType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a host "
+                 "which has a mail agent which will accept mail for forwarding to "
+                 "the specified domain."): ToSubClass
+		]
+	string MFHost;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MF' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name of the domain, class "
+                 "(default = IN), 'time to live' value and the host of the mail "
+                 "agent. It returns a reference to the new object as an output "
+                 "parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string MFHost, 
+        [OUT] MicrosoftDNS_MFType ref RR); 
+
+		[Implemented, Description(
+		"This method updates the TTL and MF Host to the values specified "
+		"as the input parameters of this method. If a new value for some "
+		"parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter. "): ToSubClass
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string MFHost, 
+		[OUT] MicrosoftDNS_MFType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MG record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{4FFDF894-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MGType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a "
+                 "mailbox which is a member of the mail group specified by the "
+                 "record's owner name."): ToSubClass
+		]
+	string MGMailbox;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MG' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name of the mail group, class "
+                 "(default = IN), 'time to live' value and the mailbox name. It "
+                 "returns a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string MGMailbox, 
+        [OUT] MicrosoftDNS_MGType ref RR);  
+		
+		[Implemented, Description(
+		"This method updates the TTL and MG Mailbox to the values specified "
+		"as the input parameters of this method. If a new value for some "
+		"parameter is not specified, then the current value for this parameter "
+		"is not changed. The method returns a reference to the modified "
+		"object as an output parameter. "): ToSubClass
+
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string MGMailbox, 
+		[OUT] MicrosoftDNS_MGType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MR record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{4FFDF895-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MRType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a "
+                 "mailbox which is the proper rename of the mailbox specified "
+                 "in the record's Owner Name."): ToSubClass
+		]
+	string MRMailbox;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MR' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name of the mailbox, class "
+                 "(default = IN), 'time to live' value and the mailbox rename. It "
+                 "returns a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName,
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string MRMailbox, 
+        [OUT] MicrosoftDNS_MRType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL and MR Mailbox to the values "
+		"specified as the input parameters of this method. If a new value "
+		"for some parameter is not specified, then the current value for "
+		"this parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void Modify(
+		[IN, optional] uint32 TTL, 
+        [IN] string MRMailbox, 
+		[OUT] MicrosoftDNS_MRType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MINFO record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{5CA876B4-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MINFOType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a "
+                 "mailbox which is responsible for the mailing list or mailbox "
+                 "specified in the record's Owner Name."): ToSubClass
+		]
+	string ResponsibleMailbox;
+		[Read: ToSubClass ,
+		 Description("A Fully Qualified Domain Name which specifies a "
+                 "mailbox which is to receive error messages related to the mailing "
+                 "list or mailbox specified by the owner name of the MINFO record."):
+		 ToSubClass
+		]
+	string ErrorMailbox;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MINFO' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name of the mail list/box, "
+                 "class (default = IN), 'time to live' value and the responsible "
+                 "and error mailboxes. It returns a reference to the new object "
+                 "as an output parameter."): 
+                 ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string ResponsibleMailbox, 
+        [IN] string ErrorMailbox, [OUT] MicrosoftDNS_MINFOType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL, Responsible Mailbox and Error Mailbox "
+		"to the values specified as the input parameters of this method. If "
+		"a new value for some parameter is not specified, then the current "
+		"value for this parameter is not changed. The method returns a "
+		"reference to the modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string ResponsibleMailbox, 
+		[IN, optional] string ErrorMailbox,
+		[OUT] MicrosoftDNS_MINFOType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type RP record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{835AC174-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_RPType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name that specifies the "
+                 "mailbox for the responsible person."): ToSubClass
+		]
+	string RPMailbox;
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name for which TXT RR's "
+                 "exist."): ToSubClass
+		]
+	string TXTDomainName;
+		[Implemented, static, Description(
+		 "This method instantiates an 'RP' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner/responsible person Name, "
+                 "class (default = IN), 'time to live' value and the domain names "
+                 "for the person's mailbox and TXT RR locations. It returns a "
+                 "reference to the new object as an output parameter."): 
+	         ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] string RPMailbox, 
+		[IN] string TXTDomainName, [OUT] MicrosoftDNS_RPType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL, RP Mailbox and TXT Domain Name to the "
+		"values specified as the input parameters of this method. If a new "
+		"value for some parameter is not specified, then the current value "
+		"for this parameter is not changed. The method returns a reference "
+		"to the modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string RPMailbox, 
+		[IN, optional] string TXTDomainName,
+		[OUT] MicrosoftDNS_RPType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type MX record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{835AC172-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_MXType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The preference given to this RR among others "
+                  "at the same owner.  Lower values are preferred."): ToSubClass
+		]
+	uint16 Preference;
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a host "
+                 "willing to act as a mail exchange for the owner name."): ToSubClass
+		]
+	string MailExchange;
+		[Implemented, static, Description(
+		 "This method instantiates an 'MX' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value, record preference and host name willing "
+                 "to be a mail exchange. It returns a reference to the new "
+                 "object as an output parameter."): 
+	         ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+        [IN, optional] uint32 TTL, [IN] uint16 Preference, 
+        [IN] string MailExchange, [OUT] MicrosoftDNS_MXType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL, Preference and Mail Exchange to the "
+		"values specified as the input parameters of this method. If a new "
+		"value for some parameter is not specified, then the current value "
+		"for this parameter is not changed. The method returns a reference "
+		"to the modified object as an output parameter."): ToSubClass
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] uint16 Preference, 
+		[IN, optional] string MailExchange,
+		[OUT] MicrosoftDNS_MXType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type AFSDB record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{8AEF7B9E-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_AFSDBType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("Subtype of the host AFS server. For subtype 1, "
+                  "the host has an AFS version 3.0 Volume Location Server for "
+                  "the named AFS cell.  In the case of subtype 2, the host has "
+                  "an authenticated name server holding the cell-root directory "
+                  "node for the named DCE/NCA cell."): ToSubClass, 
+		 ValueMap {"1", "2"}: ToSubClass
+		]
+	uint16 Subtype;
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a host "
+                 "that has a server for the AFS cell specified in owner name."):
+		 ToSubClass
+		]
+	string ServerName;
+		[Implemented, static, Description(
+		 "This method instantiates an 'AFSDB' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner/cell Name, class (default = "
+                 "IN), 'time to live' value, and host AFS server subtype and name. "
+                 "It returns a reference to the new object as an output parameter."
+				 ): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] uint16 Subtype, [IN] string ServerName, 
+		[OUT] MicrosoftDNS_AFSDBType ref RR); 
+
+		[Implemented, Description(
+		"This method updates the TTL, Subtype and Server Name to the values "
+		"specified as the input parameters of this method. If a new value "
+		"for some parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] uint16 Subtype, 
+		[IN, optional] string ServerName,
+		[OUT] MicrosoftDNS_AFSDBType ref RR);  
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type RT record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{913D93A0-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_RTType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The preference given to this RR among others "
+                  "at the same owner.  Lower values are preferred."): ToSubClass
+		]
+	uint16 Preference;
+		[Read: ToSubClass , 
+		 Description("A Fully Qualified Domain Name which specifies a host "
+                 "which will serve as an intermediate in reaching the host "
+                 "specified by owner."): ToSubClass
+		]
+	string IntermediateHost;
+		[Implemented, static, Description(
+		 "This method instantiates an 'RT' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner/host Name, class (default = "
+                 "IN), 'time to live' value, record preference and intermediate "
+                 "host name. It returns a reference to the new object as an output "
+                 "parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] uint16 Preference, 
+		[IN] string IntermediateHost, [OUT] MicrosoftDNS_RTType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL, Preference and Intermediate Host to "
+		"the values specified as the input parameters of this method. If a "
+		"new value for some parameter is not specified, then the current "
+		"value for this parameter is not changed. The method returns a "
+		"reference to the modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] uint16 Preference, 
+		[IN, optional] string IntermediateHost,
+		[OUT] MicrosoftDNS_RTType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type HINFO record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{567E21FA-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_HINFOType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The CPU type of the owner of the record."): 
+	          ToSubClass
+		]
+	string CPU;
+		[Read: ToSubClass ,
+		 Description("The operating system type of the owner."): ToSubClass
+		]
+	string OS;
+		[Implemented, static, Description(
+		 "This method instantiates an 'HINFO' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value, and the host's CPU and OS types. It returns "
+                 "a reference to the new object as an output parameter."
+				 ): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] string CPU, [IN] string OS, 
+		[OUT] MicrosoftDNS_HINFOType ref RR); 
+
+		[Implemented, Description(
+		"This method updates the TTL, CPU and OS to the values specified as "
+		"the input parameters of this method. If a new value for some "
+		"parameter is not specified, then the current value for this parameter "
+		"is not changed. The method returns a reference to the modified object "
+		"as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string CPU, 
+		[IN, optional] string OS,
+		[OUT] MicrosoftDNS_HINFOType ref RR);  
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type ISDN record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{8AEF7BA0-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_ISDNType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The ISDN number and DDI of the record's owner."): 
+	          ToSubClass
+		]
+	string ISDNNumber;
+		[Read: ToSubClass ,
+		 Description("The subaddress of the owner, if defined."): ToSubClass
+		]
+	string SubAddress;
+		[Implemented, static, Description(
+		 "This method instantiates an 'ISDN' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value, and the ISDN number and subaddress of the "
+                 "owner. It returns a reference to the new object as an output "
+                 "parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] string ISDNNumber, [IN] string SubAddress, 
+        [OUT] MicrosoftDNS_ISDNType ref RR);
+
+		[Implemented, Description(
+		"This method updates the TTL, ISDN Number and SubAddress to the values "
+		"specified as the input parameters of this method. If a new value for "
+		"some parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string ISDNNumber, 
+		[IN, optional] string SubAddress,
+		[OUT] MicrosoftDNS_ISDNType ref RR);   
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type TXT record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{835AC173-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_TXTType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("Descriptive text whose semantics depend on the owner "
+                  "domain."): ToSubClass
+		]
+	string DescriptiveText;
+		[Implemented, static, Description(
+		 "This method instantiates a 'TXT' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value, and the record's text. It returns a "
+                 "reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] string DescriptiveText, 
+        [OUT] MicrosoftDNS_TXTType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL and Descriptive Text to the values "
+		"specified as the input parameters of this method. If a new value for "
+		"some parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN] string DescriptiveText, 
+		[OUT] MicrosoftDNS_TXTType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type X25 record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{8AEF7B9F-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_X25Type : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("PSDN address of the record's owner."): ToSubClass
+		]
+	string PSDNAddress;
+		[Implemented, static, Description(
+		 "This method instantiates an 'X25' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value, and the PSDN address. It returns a "
+                 "reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] string PSDNAddress, 
+        [OUT] MicrosoftDNS_X25Type ref RR); 
+
+		[Implemented, Description(
+		"This method updates the TTL and PSDN Address to the values "
+		"specified as the input parameters of this method. If a new value for "
+		"some parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string PSDNAddress, 
+		[OUT] MicrosoftDNS_X25Type ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type WKS record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{567E21F8-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_WKSType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A 32 bit Internet address for the record's owner."):
+	          ToSubClass
+	 	]
+	string InternetAddress;
+		[Read: ToSubClass ,
+		 Description("A string representing the IP protocol for this record. Values "
+                    "included 'udp' or 'tcp'."): ToSubClass
+		]
+	string IPProtocol;
+		[Read: ToSubClass ,
+		 Description("A string that contains all the services used by the "
+                    "Well Known Service (WKS) record."): ToSubClass
+		]
+	string Services;
+		[Implemented, static, Description(
+		 "This method instantiates a 'WKS' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner Name, class (default = IN), "
+                 "'time to live' value, and the owner's Internet Address, IP "
+                 "protocol and port bit mask. It returns a reference to the new "
+                 "object as an output parameter."): 
+                 ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, 
+		[IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, 
+		[IN] string InternetAddress, 
+		[IN] string IPProtocol,
+		[IN] string Services, 
+		[OUT] MicrosoftDNS_WKSType ref RR);  
+
+		[Implemented, Description(
+		"This method updates the TTL, Internet Address, IP Protocol and Services"
+		"to the values specified as the input parameters of this method. If a new "
+		"value for some parameter is not specified, then the current value for "
+		"this parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] uint32 InternetAddress, 
+        [IN, optional] uint8 IPProtocol, 
+		[IN, optional] uint8 Services,
+		[OUT] MicrosoftDNS_WKSType ref RR);  
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type AAAA record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{913D93A1-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_AAAAType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The AAAA address for a IPv6 host."): ToSubClass
+		]
+	string IPv6Address;
+		[Implemented, static, Description(
+		 "This method instantiates an 'AAAA' Type of Resource Record based "
+		"on the data in the method's input parameters: the record's DNS "
+		"Server Name, Container Name, Owner/host Name, class (default = "
+		"IN), 'time to live' value, and the IPv6 address. It returns a "
+		"reference to the new object as an output parameter.")
+		: ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, [IN] string IPv6Address, 
+        [OUT] MicrosoftDNS_AAAAType ref RR);  
+		
+		[Implemented, Description(
+		"This method updates the TTL and IPv6 Address to the values "
+		"specified as the input parameters of this method. If a new value for "
+		"some parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+        [IN, optional] string IPv6Address, 
+		[OUT] MicrosoftDNS_AAAAType ref RR);
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type SRV record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{A9A68712-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_SRVType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A priority of the target host specified in owner "
+                  "name. Lower numbers imply higher priorities."): ToSubClass
+		]
+	uint16 Priority;
+		[Read: ToSubClass , 
+		 Description("A weight of the target host. This is useful when "
+                  "selecting among hosts that have the same priority. The chances "
+                  "of using this host should be proportional to its weight."): 
+	          ToSubClass
+		]
+	uint16 Weight;
+		[Read: ToSubClass ,
+		 Description("A port on the target host of a protocol service."):
+	          ToSubClass
+		]
+	uint16 Port;
+		[Read: ToSubClass , 
+	         Description("A Fully Qualified Domain Name of the target host. A "
+                 "target of \".\" means that the service is decidedly not available "
+                 "at this domain."): ToSubClass
+		]
+	string DomainName;
+		[Implemented, static, Description(
+		 "This method instantiates an 'SRV' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner/target Name, class (default = "
+	           "IN), 'time to live' value, and target host's priority, weight, "
+                 "port and domain name. It returns a reference to the new object "
+                 "as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,     
+		[IN, optional] uint32 TTL, [IN] uint16 Priority, [IN] uint16 Weight, 
+        [IN] uint16 Port, [IN] string DomainName, [OUT] MicrosoftDNS_SRVType ref RR); 
+		
+		[Implemented, Description(
+		"This method updates the TTL, Priority, Weight, Port, and Domain Name "
+		"to the values specified as the input parameters of this method. If a new "
+		"value for some parameter is not specified, then the current value for "
+		"this parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+
+		]
+	void modify(
+        [IN, optional] uint32 TTL, 
+		[IN, optional] uint16 Priority, 
+		[IN, optional] uint16 Weight, 
+        [IN, optional] uint16 Port, 
+		[IN, optional] string DomainName, 
+		[OUT] MicrosoftDNS_SRVType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type ATMA record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{A9A68713-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_ATMAType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("The ATM address format. Two possible values "
+                  "for FORMAT are: 0 indicating ATM End System Address (AESA) "
+                  "format and 1 indicating E.164 format."): ToSubClass, 
+		 Values {"AESA", "E.164"}: ToSubClass
+		]
+        uint16 Format;
+		[Read: ToSubClass ,
+		 Description("A variable length string of octets containing the "
+                  "ATM address of the node/owner to which this RR pertains. The "
+                  "first four bytes of the array are used to store the size of the "
+                  "octet string. The most significant byte is stored in byte 0."): 
+		  ToSubClass
+		]
+        string ATMAddress; 
+		[Implemented, static, Description(
+		 "This method instantiates an 'ATMA' Type of Resource Record based "
+                 "on the data in the method's input parameters: the record's DNS "
+                 "Server Name, Container Name, Owner/node Name, class (default = "
+		     "IN), 'time to live' value, and ATM format and address. It returns "
+                 "a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, 
+		[IN] uint16 Format, 
+		[IN] string ATMAddress, 
+        [OUT] MicrosoftDNS_ATMAType ref RR);  
+		
+		[Implemented, Description(
+		"This method updates the TTL, Format and ATMA Address to the values "
+		"specified as the input parameters of this method. If a new value for "
+		"some parameter is not specified, then the current value for this "
+		"parameter is not changed. The method returns a reference to the "
+		"modified object as an output parameter."): ToSubClass
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+		[IN, optional] uint16 Format, 
+		[IN, optional] string ATMAddress, 
+        [OUT] MicrosoftDNS_ATMAType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type WINS record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{A9A68714-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_WINSType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		 Description("A WINS mapping flag that specifies whether the record "
+		"must be included into the zone replication. It may have only two "
+		"values: 0x80000000 and 0x00010000 corresponding to the replication "
+		"and no-replication (local record) flags, respectively."): ToSubClass,
+		ValueMap {"0x80000000", "0x00010000"}: ToSubClass
+
+		]
+	uint32 MappingFlag;
+		[Read: ToSubClass ,
+		 Description("How long (in seconds) a DNS server, using WINS Lookup, "
+                  "waits before giving up."): ToSubClass ,
+	         Units ("Seconds"): ToSubClass
+		]
+	uint32 LookupTimeout;
+		[Read: ToSubClass ,
+		 Description("How long (in seconds) a DNS server, using WINS Lookup, "
+	          "may cache the WINS server's response."): ToSubClass ,
+	         Units ("Seconds"): ToSubClass
+		]
+	uint32 CacheTimeout;
+		[Read: ToSubClass ,
+		 Description("A comma separated list of IP addresses of WINS servers "
+                  "to be addressed in a WINS Lookups."): ToSubClass
+		]
+	string WinsServers;
+		[Implemented, static, Description(
+		"This method instantiates a 'WINS' Type of Resource Record based "
+		"on the data in the method's input parameters: the record's DNS "
+		"Server Name, Container Name, Owner Name, class (default = "
+		"IN), 'time to live' value, and WINS mapping flag, lookup timeout, "
+		"cache timeout and list of IP addresses for lookup. It returns "
+		"a reference to the new object as an output parameter."): ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, 
+		[IN] uint32 MappingFlag, 
+		[IN] uint32 LookupTimeout, 
+		[IN] uint32 CacheTimeout, 
+		[IN] string WinsServers, 
+        [OUT] MicrosoftDNS_WINSType ref RR); 
+		
+		[Implemented, Description(
+		 "This method updates the TTL, Mapping Flag, Lookup Timeout, Cache Timeout "
+         "and Wins Servers to the values specified as the input parameters of this "
+         "method. If a new value for some parameter is not specified, then the "
+         "current value for this parameter is not changed. The method returns a "
+         "reference to the modified object as an output parameter."): ToSubClass
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+		[IN, optional] uint32 MappingFlag, 
+		[IN, optional] uint32 LookupTimeout, 
+		[IN, optional] uint32 CacheTimeout, 
+		[IN, optional] string WinsServers, 
+        [OUT] MicrosoftDNS_WINSType ref RR); 
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,		
+	 Description("A subclass of MicrosoftDNS_ResourceRecord that represents a "
+          "Type WINSR record."): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Locale (0x409), UUID ("{A9A68715-B6EA-11d2-85E5-0000F8102E5F}") 
+	]
+class MicrosoftDNS_WINSRType : MicrosoftDNS_ResourceRecord
+{
+		[Read: ToSubClass , 
+		Description("A WINSR mapping flag that specifies whether the record "
+		"must be included into the zone replication. It may have only two "
+		"values: 0x80000000 and 0x00010000 corresponding to the replication "
+		"and no-replication (local record) flags, respectively."): ToSubClass,
+		ValueMap {"0x80000000", "0x00010000"}: ToSubClass
+
+		]
+	uint32 MappingFlag;
+		[Read: ToSubClass ,
+		 Description("How long (in seconds) a DNS server, using WINS Reverse "
+		  "Lookup, waits before giving up."): ToSubClass ,
+	         Units ("Seconds"): ToSubClass
+		]
+	uint32 LookupTimeout;
+		[Read: ToSubClass ,
+		 Description("How long (in seconds) a DNS server, using WINS Lookup, "
+	          "may cache the WINS server's response."): ToSubClass ,
+	         Units ("Seconds"): ToSubClass
+		]
+	uint32 CacheTimeout;
+		[Read: ToSubClass ,
+		 Description("A domain name to append to returned NetBIOS names."):
+                  ToSubClass
+		]
+	string ResultDomain;
+		[Implemented, static, Description(
+		"This method instantiates a 'WINSR' Type of Resource Record based "
+		"on the data in the method's input parameters: the record's DNS "
+		"Server Name, Container Name, Owner Name, class (default = "
+		"IN), 'time to live' value, and WINS mapping flag, reverse lookup "
+		"timeout, WINS cache timeout and domain name to append. It returns "
+		"a reference to the new object as an output parameter.")
+		: ToSubClass
+		]
+	void CreateInstanceFromPropertyData([IN] string DnsServerName,
+        [IN] string ContainerName, [IN] string OwnerName, 
+        [IN, optional, Valuemap {"1", "2", "3", "4"}, Values {"IN (Internet)", 
+         "CS (CSNET)", "CH (CHAOS)", "HS (Hesiod)"}] uint16 RecordClass = 1,   
+		[IN, optional] uint32 TTL, 
+		[IN] uint32 MappingFlag, 
+        [IN] uint32 LookupTimeout, 
+		[IN] uint32 CacheTimeout, 
+		[IN] string ResultDomain, 
+        [OUT] MicrosoftDNS_WINSRType ref RR); 
+		
+		
+		[Implemented, Description(
+		 "This method updates the TTL, Mapping Flag, Lookup Timeout, Cache Timeout "
+         "and Result Domain to the values specified as the input parameters of this "
+         "method. If a new value for some parameter is not specified, then the "
+         "current value for this parameter is not changed. The method returns a "
+         "reference to the modified object as an output parameter"): ToSubClass
+		]
+	void modify(
+		[IN, optional] uint32 TTL, 
+		[IN, optional] uint32 MappingFlag, 
+        [IN, optional] uint32 LookupTimeout, 
+		[IN, optional] uint32 CacheTimeout, 
+		[IN, optional] string ResultDomain, 
+        [OUT] MicrosoftDNS_WINSRType ref RR); 
+};
+
+	[Abstract, Association: ToInstance ToSubClass DisableOverride,  
+         Aggregation: ToSubClass DisableOverride, 
+         Description ("A generic association to establish 'part of' relationships "
+          "between managed system elements. For example, the SystemComponent "
+          "association defines parts of a system."): ToSubClass,
+	 Locale (0x409), UUID ("{8502C573-5FBB-11D2-AAC1-006008C78BC7}") ] 
+class CIM_Component
+{
+        [Read: ToSubClass , Aggregate:  ToSubClass DisableOverride , 
+         Description ("The parent element in the association"): ToSubClass ] 
+    CIM_ManagedSystemElement REF GroupComponent;
+        [Description ("The child element in the association"): ToSubClass , 
+         Read: ToSubClass] 
+    CIM_ManagedSystemElement REF PartComponent;
+};
+
+	[
+ 	 Schema ("MicrosoftDNS"): ToSubClass , 
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Description ("Every instance of the class MicrosoftDNS_Server may contain "
+          "multiple instances of the class MicrosoftDNS_Domain. Every instance of "
+          "the class MicrosoftDNS_Domain belongs to a single instance of the class "
+          "MicrosoftDNS_Server and is defined to be weak to that server." ): 
+          ToSubClass ,
+       Locale (0x409), UUID ("{6C33CF92-AA43-11d2-85DD-0000F8102E5F}") 
+	]
+class MicrosoftDNS_ServerDomainContainment : CIM_Component
+{
+		[Key, Override ("GroupComponent"): ToSubClass ,
+		 Read: ToSubClass,
+             Min (1): ToSubClass , Max (1): ToSubClass ,
+		 Description ("The DNS Server." ): ToSubClass
+		]
+	MicrosoftDNS_Server REF GroupComponent;
+		[Key, Override ("PartComponent"): ToSubClass , 
+             Weak: DisableOverride ToSubClass, Read: ToSubClass,
+		 Description ("A Domain, Zone, Cache or RootHints managed "
+              "by the DNS server." ): ToSubClass
+		]
+	MicrosoftDNS_Domain REF PartComponent;
+};
+
+	[
+       Schema ("MicrosoftDNS"): ToSubClass ,
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Description ("Domains may contain other Domains. (Every instance of "
+          "the MicrosoftDNS_Domain class may contain multiple other instances of "
+          "MicrosoftDNS_Domain.) An instance of a MicrosoftDNS_Domain object is "
+          "directly contained in (at most) one higher level MicrosoftDNS_Domain."): 
+          ToSubClass,
+       Locale (0x409), UUID ("{6C33CF93-AA43-11d2-85DD-0000F8102E5F}")
+ 	]
+class MicrosoftDNS_DomainDomainContainment : CIM_Component
+{
+		[Key, Max(1): ToSubClass, Override ("GroupComponent"): ToSubClass ,
+		 Read: ToSubClass,
+		 Description ("A higher level Domain, Zone, Cache or RootHints." ):
+                  ToSubClass
+		]
+	MicrosoftDNS_Domain REF GroupComponent;
+		[Key, Override ("PartComponent"): ToSubClass , 
+		 Read: ToSubClass,
+		 Description ("The Domain contained by a higher level Domain, "
+                  "Zone, Cache or RootHints." ): ToSubClass
+		]
+	MicrosoftDNS_Domain REF PartComponent;
+};
+
+	[
+	 Schema ("MicrosoftDNS"): ToSubClass ,
+	 Dynamic, Provider("MS_NT_DNS_PROVIDER"),
+	 Description ( "Every instance of the class MicrosoftDNS_Domain may "
+          "contain multiple instances of the class, MicrosoftDNS_ResourceRecord. "
+          "Every instance of the class MicrosoftDNS_ResourceRecord belongs to a "
+          "single instance of the class MicrosoftDNS_Domain and is defined to be "
+          "weak to that instance." ): ToSubClass,
+       Locale (0x409), UUID ("{767E560C-AA43-11d2-85DD-0000F8102E5F }")
+ 	]
+class MicrosoftDNS_DomainResourceRecordContainment : CIM_Component
+{
+		[Key, Override ("GroupComponent"): ToSubClass , 
+             Min (1): ToSubClass , Max (1): ToSubClass ,
+		 Read: ToSubClass,
+		 Description ("The Zone, Cache, RootHints or Domain directly "
+                  "containing the Resource Record." ): ToSubClass
+		]
+	MicrosoftDNS_Domain REF GroupComponent;
+		[Key, Override ("PartComponent"): ToSubClass , 
+             Weak: DisableOverride ToSubClass , Read: ToSubClass,
+		 Description ("The Resource Record that is contained in a Domain, "
+                  "Zone, Cache or RootHints." ): ToSubClass
+		]
+	MicrosoftDNS_ResourceRecord REF PartComponent;
+};

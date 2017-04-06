@@ -1,0 +1,39 @@
+input.navigationButton,
+input.navigationButton-current {
+  width: 100px;
+  height: 22px;
+}
+
+
+input#bid-logout {
+  width: 80px;
+}
+
+.verttop {
+	vertical-align: top;
+}
+
+.vertcenter {
+	vertical-align: middle;
+}
+
+.vertbottom {
+	vertical-align: bottom;
+}
+
+input.commonButton {
+  width: 115px;
+  height: 22px;
+}
+
+input#bid-next-page, input#bid-prev-page {
+  width: 55px;
+}
+
+a.mailalias {
+  margin-left: 20px; 
+}
+
+.gaugeArea {
+  margin: 2px 0;
+}

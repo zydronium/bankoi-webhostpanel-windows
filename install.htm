@@ -1,0 +1,249 @@
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=iso-8859-2">
+<title>Bankoi Webhost Panel Installation</title>
+</head>
+<body bgcolor="#FFFFFF" link=blue vlink=purple class="Normal" lang=EN-US>
+<div class=Section1> 
+  <table width="75%" border="0" align="center" cellpadding="1" cellspacing="1" bgcolor="#333399">
+    <tr> 
+      <td height="50" valign="middle" bgcolor="#FFFFFF"><div align="center"> 
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr> 
+              <td><div align="center"><font face="Verdana, Arial, Helvetica, sans-serif"><strong><font size="4"><img src="WebhostPanel3D.gif" width="100" height="100"></font></strong></font></div></td>
+              <td><font face="Verdana, Arial, Helvetica, sans-serif"><strong><font size="4">Bankoi 
+                Webhost Panel (for Windows) Installation </font></strong></font></td>
+            </tr>
+          </table>
+        </div></td>
+    </tr>
+    <tr> 
+      <td bgcolor="#FFFFFF"><font face="Verdana, Arial, Helvetica, sans-serif"><strong><br>
+        Prerequisites :</strong></font><br> <br> <table width="100%" border="0" cellpadding="5" cellspacing="5">
+          <tr> 
+            <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">1)&nbsp;&nbsp; 
+              Windows 2000 / 2003 server with IIS installed (Web service with 
+              ASP support, FTP service).</font></td>
+          </tr>
+          <tr> 
+            <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">2)&nbsp;&nbsp; 
+              A Mysql database</font></td>
+          </tr>
+          <tr> 
+            <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 3)&nbsp;&nbsp; 
+              My ODBC (ODBC Driver for mysql) installed on server.</font></td>
+          </tr>
+          <tr> 
+            <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">4)&nbsp;&nbsp; 
+              FrontPage server extension 2002.</font></td>
+          </tr>
+          <tr> 
+            <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 5)&nbsp;&nbsp; 
+              For Awstats support : Perl 5.6.0 or later (For setup see below)</font></td>
+          </tr>
+          <tr> 
+            <td height="40"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">6)&nbsp; 
+              For DNS support : DNS Provider for WMI on windows 2000. (It comes 
+              with windows 2003) (For setup see below)</font></td>
+          </tr>
+        </table></td>
+    </tr>
+    <tr> 
+      <td bgcolor="#FFFFFF"><br> <font face="Verdana, Arial, Helvetica, sans-serif"><strong>Setup:</strong></font><br> 
+        <br> <table width="98%" border="0" cellpadding="5" cellspacing="5">
+          <tr> 
+            <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>1) 
+              &nbsp;Creating System User that will run Control Panel Site</strong></font> 
+              <table width="100%" border="0" cellpadding="5" cellspacing="5">
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">a.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                    Create a USER With administrator Group With named "webhostpanel" 
+                    with your password</font> </td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>2)&nbsp;&nbsp;&nbsp; 
+              Setting Site in IIS:</strong></font><br> <table width="100%" border="0" cellpadding="5" cellspacing="5">
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                    Create a folder where you want to install the webhostpanel 
+                    say c:\webhostpanel</font></td>
+                </tr>
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                    Copy all the files/folders which are in webhostpanel folder 
+                    of zip file to this folder c:\webhostpanel</font></td>
+                </tr>
+                <tr> 
+                  <td><div align="justify"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                      Create a site in IIS  with site home dir as c:\webhostpanel\www. 
+                      You can choose any other port say 8077 so that it can work 
+                      on all domains hosted with that server.</font></div></td>
+                </tr>
+                <tr> 
+                  <td><div align="justify"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                      Go to properties of this site, Under "<strong>Directory 
+                      Security Tab</strong>", edit Anonymous access and authentication 
+                      control, press Edit button. On this dialog Allow anonymous 
+                      access and uncheck Integrated Windows authentication. Click 
+                      on Edit button for account used for anonymous access. Change 
+                      the user here to "<strong>webhostpanel</strong>" using Browse 
+                      button. Provide password. Uncheck Allow IIS to control password 
+                      checkbox. </font></div></td>
+                </tr>
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                    Create a folder where the sites will be created using this 
+                    control panel. For example c:\webspace . </font></td>
+                </tr>
+                <tr> 
+                  <td><div align="justify"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">6)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                      Give full permission to the folder where sites will be created 
+                      to this user &quot;<strong>webhostpanel</strong>&quot;. 
+                      Also give full permission to the user that is running IIS 
+                      service. (IISWPG_computername on windows 2003)</font></div></td>
+                </tr>
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">7)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                    Give Full permission to system32 folder of the server to &quot;<strong>webhostpanel</strong>&quot; 
+                    user .</font></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>3)&nbsp;&nbsp; 
+              Database Settings</strong></font><br> <table width="100%" border="0" cellpadding="5" cellspacing="5">
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">a.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                    Insert webhostpanel-1.20.sql in your mysql database. </font></td>
+                </tr>
+                <tr> 
+                  <td><div align="justify"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">b.&nbsp;&nbsp;&nbsp; 
+                      Edit db.asp in inc folder. Change below line according to 
+                      your database and MYODBC driver on your server<br>
+                      <font color="#FF0000">strConnection = &quot;driver={MySQL 
+                      ODBC 3.51 Driver};server=localhost;uid=root;pwd=;database=webhostpanel;</font>&quot;</font></div></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>4) 
+              Important settings</strong></font><br> <table width="100%" border="0" cellpadding="5" cellspacing="5">
+                <tr> 
+                  <td><div align="justify"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">a.&nbsp; 
+                      Edit params.asp in inc folder. Every line is well commented. 
+                      You need to check those entire path related settings in 
+                      this file.</font></div></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>5)&nbsp;&nbsp; 
+              </strong><strong> Web stats settings:</strong></font><br> 
+              <table width="100%" border="0" cellpadding="5" cellspacing="5">
+                <tr> 
+                  <td><div align="justify"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">1. 
+                      To  generate webstats (webalizer and awstats) you need to 
+                      setup a scheduled task the command must be as follows (where 
+                      <strong>c:\webhostpanel</strong> must be replaced with the 
+                      original path of webhostpanel installation)<br>
+                      <font color="#FF0000">c:\webhostpanel\bin\stats.bat</font></font></div></td>
+                </tr>
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">2. 
+                    <a href="http://awstats.sourceforge.net" target="_blank">Awstats 
+                    6.1</a> is packed with Banoi webhostpanel. If you want to 
+                    use awstatas then Perl must be installed on your server and 
+                    must be enabled on your websites. In windows 2003 there must 
+                    be require to set &quot;ALLOW&quot; under webservice extentions 
+                    in IIS MMC for perl ISAPI and CGI. these webstats can e accessed 
+                    as http://domainname.tld/webstat</font></td>
+                </tr>
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">3. 
+                    If you dont want to use awstats you can set <strong>isAwstats 
+                    = &quot;NO&quot;</strong> in params.asp similar for webalizer 
+                    stats <strong>isWebalizerStats=&quot;NO&quot;</strong> if 
+                    you dont want to use webalizer stats. Webalizer stats will 
+                    be available as http://domainname.tld/stats if these are enabled.</font></td>
+                </tr>
+                <tr>
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">4. 
+                    We have configured GeoIP plugin for perl. Awstats use this 
+                    plugin to map country name from IP. You can install this plugin 
+                    as descibe on <a href="http://www.maxmind.com/app/perl?rId=awstats" target="_blank">maxmind's</a> 
+                    site. If you dont want to install then you need to disable 
+                    this support from awstats conf file.</font></td>
+                </tr>
+              </table></td>
+          </tr>
+          <tr> 
+            <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>6)&nbsp;&nbsp; 
+              DNS Server support:<br>
+              </strong></font> <table width="100%" border="0" cellpadding="5" cellspacing="5">
+                <tr> 
+                  <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">1. 
+                    For DNS server support DNS server must be installed on same 
+                    machine and DNS Provider must be installed. DNS provider comes 
+                    with windows 2003 but it must be installed separately on windows 
+                    2000. We have packed necessary files in &quot;<strong>dns 
+                    provider for win2000</strong>&quot; folder. You can install 
+                    these oin windows 2000 as follows. Please do not install these 
+                    on windows 2003 <br>
+                    <font color="#003366"><br>
+                    <strong>To install the dns provider on windows 2000,<br>
+                    1. Copy dnsschema.mof and dnsprov.dll to &lt;winntdir&gt;\system32\wbem.<br>
+                    2. Open command propmt and change directory to </strong></font><font size="1" face="Verdana, Arial, Helvetica, sans-serif"><font color="#003366"><strong> 
+                    &lt;winntdir&gt;\system32\wbem</strong></font></font><font color="#003366"><strong><br>
+                    3. Run &quot;mofcomp dnsschema.mof&quot; to register the class 
+                    information.<br>
+                    4. Run &quot;regsvr32 dnsprov.dll&quot; to register the dll.</strong><br>
+                    </font> </font></td>
+                </tr>
+              </table>
+              <font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong> 
+              </strong></font></td>
+          </tr>
+        </table></td>
+    </tr>
+    <tr> 
+      <td height="50" bgcolor="#FFFFFF"><p><font face="Verdana, Arial, Helvetica, sans-serif">That's 
+          it, please login with admin / admin, and start using the webhostpanel.</font></p></td>
+    </tr>
+    <tr> 
+      <td bgcolor="#FFFFFF"><p style='line-height:150%'><font face="Verdana, Arial, Helvetica, sans-serif"><br>
+          Please visit support forums at <a
+href="http://forums.bankoi.com/">http://forums.bankoi.com</a> .</font></p>
+        <p style='line-height:150%'><font face="Verdana, Arial, Helvetica, sans-serif">Linux 
+          Support<br>
+          <a href="http://www.linuxbankoi.net" target="_blank">http://www.linuxbankoi.net</a><br>
+          <br>
+          Web Servers Support<br>
+          <a href="http.//www.hostbankoi.net" target="_blank">http.//www.hostbankoi.net</a><br>
+          <br>
+          SMS Support<br>
+          <a href="http://www.smsbankoi.net" target="_blank">http://www.smsbankoi.net</a> 
+          </font></p>
+        <p style='line-height:150%'><font face="Verdana, Arial, Helvetica, sans-serif">Bankoi 
+          Web Helpdesk<br>
+          </font><font face="Verdana, Arial, Helvetica, sans-serif"><a
+href="http://www.helpdesk-software.ws/">http://www.helpdesk-software.ws</a></font></p>
+        <p style='line-height:150%'><font face="Verdana, Arial, Helvetica, sans-serif">Bankoi 
+          Webhost Panel<br>
+          </font><font face="Verdana, Arial, Helvetica, sans-serif"><a
+href="http://www.webhost-panel.com/">http://www.webhost-panel.com</a><br>
+           </font></p></td>
+    </tr>
+  </table>
+  <p style='line-height:150%'>&nbsp;</p>
+</div>
+<div class=Section1>
+  <p style='line-height:150%;
+'> <font face="Verdana, Arial, Helvetica, sans-serif"><br>
+    </font></p>
+  <p style='line-height:150%'>&nbsp;</p>
+  <p style='line-height:150%'>&nbsp;</p>
+  </div>
+</body>
+</html>
